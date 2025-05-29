@@ -67,3 +67,8 @@
 - [`Services/`](https://github.com/denlygun/kpz-project/tree/main/CalorieTracker/Services)— бізнес-логіка (калькулятори, обчислення).
 - [`ViewModels/`](https://github.com/denlygun/kpz-project/tree/main/CalorieTracker/ViewModels)— логіка відображення для вікон WPF.
 
+---
+
+
+## 🧱 Number of Code Lines
+![ Number of Code Lines](photo/3.jpg)
