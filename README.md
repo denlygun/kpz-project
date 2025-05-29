@@ -36,7 +36,7 @@
 2. **Open/Closed Principle (OCP)** — підтримка нових формул розрахунку без зміни існуючих класів.
 3. **Dependency Inversion Principle (DIP)** — логіка залежить від абстракцій (`ICalorieCalculator`, `IRepository`).
 4. **Don't Repeat Yourself (DRY)** — спільна логіка винесена у сервіси.
-5. **Separation of Concerns (SoC)** — View, ViewModel і Model розділені.
+5. **Separation of Concerns (SoC)** — ViewModel і Model розділені.
 
 ---
 
@@ -44,16 +44,16 @@
 
 | Патерн | Файл | Призначення |
 |--------|------|-------------|
-| **Command** | `AddFoodEntryCommand.cs`, `DeleteFoodEntryCommand.cs` | Інкапсуляція операцій у вигляді об'єктів команд. |
-| **Factory** | `CalorieCalculatorFactory.cs` | Динамічне створення калькуляторів калорій. |
-| **Observer** | `CalorieGoalNotificationService.cs` | Спостерігачі для цільової норми калорій. |
+| **Command** | [`AddFoodEntryCommand.cs`](https://github.com/denlygun/kpz-project/blob/main/CalorieTracker/Services/AddFoodEntryCommand.cs),[`DeleteFoodEntryCommand.cs`](https://github.com/denlygun/kpz-project/blob/main/CalorieTracker/Services/DeleteFoodEntryCommand.cs)  | Інкапсуляція операцій у вигляді об'єктів команд. |
+| **Factory** | [`CalorieCalculatorFactory.cs`](https://github.com/denlygun/kpz-project/blob/main/CalorieTracker/Services/CalorieCalculatorFactory.cs) | Динамічне створення калькуляторів калорій. |
+| **Observer** | [`CalorieGoalNotificationService.cs`](https://github.com/denlygun/kpz-project/blob/main/CalorieTracker/Services/CalorieGoalNotificationService.cs)| Спостерігачі для цільової норми калорій. |
 
 ---
 
 ## 🛠️ Refactoring Techniques
 
-1. **Extract Class** — виділення класів `HarrisBenedictCalculator`, `MifflinStJeorCalculator`.
-2. **Extract Interface** — створення інтерфейсів `ICalorieCalculator`, `IRepository`.
+1. **Extract Class** — виділення класів [`HarrisBenedictCalculator`](https://github.com/denlygun/kpz-project/blob/main/CalorieTracker/Services/HarrisBenedictCalculator.cs), [`MifflinStJeorCalculator`](https://github.com/denlygun/kpz-project/blob/main/CalorieTracker/Services/MifflinStJeorCalculator.cs).
+2. **Extract Interface** — створення інтерфейсів [`ICalorieCalculator`](https://github.com/denlygun/kpz-project/blob/main/CalorieTracker/Services/ICalorieCalculator.cs), [`IRepository`](https://github.com/denlygun/kpz-project/blob/main/CalorieTracker/Repositories/IRepository.cs).
 3. **Rename Variable** — підвищення читабельності коду.
 4. **Move Method** — перенесення логіки у відповідні сервіси.
 5. **Replace Conditional with Polymorphism** — заміна умовної логіки використанням поліморфізму.
@@ -62,9 +62,8 @@
 
 ## 📁 Структура
 
-- `Models/` — моделі даних (продукти, рецепти, профіль).
-- `Repositories/` — доступ до даних.
-- `Services/` — бізнес-логіка (калькулятори, обчислення).
-- `ViewModels/` — логіка відображення для вікон WPF.
-- `Views/` — XAML-файли (AddMealWindow, SettingsWindow тощо).
+- [`Models/`](https://github.com/denlygun/kpz-project/tree/main/CalorieTracker/Models) — моделі даних (продукти, рецепти, профіль).
+- [`Repositories/`](https://github.com/denlygun/kpz-project/tree/main/CalorieTracker/Repositories)— доступ до даних.
+- [`Services/`](https://github.com/denlygun/kpz-project/tree/main/CalorieTracker/Services)— бізнес-логіка (калькулятори, обчислення).
+- [`ViewModels/`](https://github.com/denlygun/kpz-project/tree/main/CalorieTracker/ViewModels)— логіка відображення для вікон WPF.
 
