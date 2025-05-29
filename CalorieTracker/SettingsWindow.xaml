@@ -1,0 +1,78 @@
+﻿<Window x:Class="CalorieTracker.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CalorieTracker"
+        mc:Ignorable="d"
+        Title="Налаштування профілю" Height="600" Width="500"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <ScrollViewer>
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Text="👤 Особиста інформація" FontSize="16" FontWeight="Bold" 
+                      Margin="0,0,0,15" Foreground="#2196F3"/>
+
+            <TextBlock Grid.Row="1" Text="Ім'я:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox Grid.Row="2" Text="{Binding UserProfile.Name}" Margin="0,0,0,15"/>
+
+            <TextBlock Grid.Row="3" Text="Вік:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox Grid.Row="4" Text="{Binding UserProfile.Age}" Margin="0,0,0,15"/>
+
+            <TextBlock Grid.Row="5" Text="Стать:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <ComboBox Grid.Row="6" ItemsSource="{Binding Genders}" 
+                      SelectedItem="{Binding UserProfile.Gender}" Margin="0,0,0,15"/>
+
+            <TextBlock Grid.Row="7" Text="Зріст (см):" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox Grid.Row="8" Text="{Binding UserProfile.Height}" Margin="0,0,0,15"/>
+
+            <TextBlock Grid.Row="9" Text="Вага (кг):" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox Grid.Row="10" Text="{Binding UserProfile.Weight}" Margin="0,0,0,15"/>
+
+            <TextBlock Grid.Row="11" Text="Рівень активності:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <ComboBox Grid.Row="12" ItemsSource="{Binding ActivityLevels}" 
+                      SelectedItem="{Binding UserProfile.ActivityLevel}" Margin="0,0,0,15"/>
+
+            <TextBlock Grid.Row="13" Text="Ціль по вазі:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <ComboBox Grid.Row="14" ItemsSource="{Binding WeightGoals}" 
+                      SelectedItem="{Binding UserProfile.WeightGoal}" Margin="0,0,0,15"/>
+
+            <Button Grid.Row="15" Content="🧮 Розрахувати ціль калорій" 
+                   Click="CalculateGoalButton_Click" Background="#4CAF50" 
+                   Foreground="White" Padding="10,5" Margin="0,0,0,15"/>
+
+            <TextBlock Grid.Row="16" Text="Щоденна ціль калорій:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBox Grid.Row="17" Name="DailyCalorieGoalTextBox"
+                     Text="{Binding UserProfile.DailyCalorieGoal}" Margin="0,0,0,15"/>
+
+            <StackPanel Grid.Row="19" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Зберегти" Width="80" Height="30" Margin="0,0,10,0" 
+                       Click="OkButton_Click" IsDefault="True" Background="#2196F3" Foreground="White"/>
+                <Button Content="Скасувати" Width="80" Height="30" 
+                       Click="CancelButton_Click" IsCancel="True"/>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Window>

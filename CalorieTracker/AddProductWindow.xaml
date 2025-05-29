@@ -1,0 +1,54 @@
+﻿<Window x:Class="CalorieTracker.AddProductWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CalorieTracker"
+        mc:Ignorable="d"
+        Title="AddProductWindow" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Назва продукту:" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBox Grid.Row="1" Text="{Binding Product.Name}" Margin="0,0,0,15"/>
+
+        <TextBlock Grid.Row="2" Text="Калорій на грам:" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBox Grid.Row="3" Text="{Binding Product.CaloriesPerGram}" Margin="0,0,0,15"/>
+
+        <TextBlock Grid.Row="4" Text="Білки (г на 100г):" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBox Grid.Row="5" Text="{Binding Product.Protein}" Margin="0,0,0,15"/>
+
+        <TextBlock Grid.Row="6" Text="Вуглеводи (г на 100г):" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBox Grid.Row="7" Text="{Binding Product.Carbs}" Margin="0,0,0,15"/>
+
+        <TextBlock Grid.Row="8" Text="Жири (г на 100г):" FontWeight="Bold" Margin="0,0,0,5"/>
+        <TextBox Grid.Row="9" Text="{Binding Product.Fat}" Margin="0,0,0,15"/>
+
+        <TextBlock Grid.Row="10" Text="Категорія:" FontWeight="Bold" Margin="0,0,0,5"/>
+        <ComboBox Grid.Row="11" ItemsSource="{Binding Categories}" 
+                  SelectedItem="{Binding Product.Category}" Margin="0,0,0,15"/>
+
+        <StackPanel Grid.Row="13" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="OK" Width="80" Height="30" Margin="0,0,10,0" 
+                   Click="OkButton_Click" IsDefault="True"/>
+            <Button Content="Скасувати" Width="80" Height="30" 
+                   Click="CancelButton_Click" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>
