@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-D:\КПЗ\labs\CalorieTracker\CalorieTracker\obj\Debug\
+D:\КПЗ\kpz1\kpz-project_1\CalorieTracker\obj\Debug\
 CalorieTracker
 none
 false
 DEBUG;TRACE
-D:\КПЗ\labs\CalorieTracker\CalorieTracker\App.xaml
+D:\КПЗ\kpz1\kpz-project_1\CalorieTracker\App.xaml
 545677409
 
 43-713696931
-142068277891
+141229868167
 AddMealWindow.xaml;AddProductWindow.xaml;EditMealWindow.xaml;MainWindow.xaml;SettingsWindow.xaml;
 
-True
+False
 
