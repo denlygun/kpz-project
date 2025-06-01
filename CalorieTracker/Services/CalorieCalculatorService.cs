@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CalorieTracker.Models;
 using CalorieTracker.Repositories;
 using CalorieTracker.Services;
@@ -13,11 +11,23 @@ namespace CalorieTracker.Services
     {
         private readonly FoodEntryRepository _foodEntryRepository;
         private readonly UserProfileRepository _userProfileRepository;
+        private readonly IGoalStatusCalculator _goalStatusCalculator;
+        private readonly IDailyStatsFactory _dailyStatsFactory;
 
-        public CalorieCalculatorService(FoodEntryRepository foodEntryRepository, UserProfileRepository userProfileRepository)
+        // Constants for goal status thresholds
+        private const double UNDER_GOAL_THRESHOLD = 80.0;
+        private const double OVER_GOAL_THRESHOLD = 120.0;
+
+        public CalorieCalculatorService(
+            FoodEntryRepository foodEntryRepository,
+            UserProfileRepository userProfileRepository,
+            IGoalStatusCalculator goalStatusCalculator = null,
+            IDailyStatsFactory dailyStatsFactory = null)
         {
             _foodEntryRepository = foodEntryRepository;
             _userProfileRepository = userProfileRepository;
+            _goalStatusCalculator = goalStatusCalculator ?? new GoalStatusCalculator();
+            _dailyStatsFactory = dailyStatsFactory ?? new DailyStatsFactory();
         }
 
         public double CalculateDailyCalories(DateTime date)
@@ -28,63 +38,22 @@ namespace CalorieTracker.Services
         public DailyStats GetDailyStats(DateTime date)
         {
             var entries = _foodEntryRepository.GetByDate(date).ToList();
-            var totalCalories = entries.Sum(e => e.TotalCalories);
             var userProfile = _userProfileRepository.GetProfile();
 
-            return new DailyStats
-            {
-                Date = date,
-                TotalCalories = totalCalories,
-                Goal = userProfile.DailyCalorieGoal,
-                Entries = entries
-            };
+            return _dailyStatsFactory.CreateDailyStats(date, entries, userProfile.DailyCalorieGoal);
         }
 
         public List<DailyStats> GetWeeklyStats(DateTime startDate)
         {
-            var stats = new List<DailyStats>();
-            var userProfile = _userProfileRepository.GetProfile();
-
-            for (int i = 0; i < 7; i++)
-            {
-                var date = startDate.AddDays(i);
-                var entries = _foodEntryRepository.GetByDate(date).ToList();
-                var totalCalories = entries.Sum(e => e.TotalCalories);
-
-                stats.Add(new DailyStats
-                {
-                    Date = date,
-                    TotalCalories = totalCalories,
-                    Goal = userProfile.DailyCalorieGoal,
-                    Entries = entries
-                });
-            }
-
-            return stats;
+            return GetStatsForDateRange(startDate, 7);
         }
 
         public List<DailyStats> GetMonthlyStats(DateTime month)
         {
-            var stats = new List<DailyStats>();
-            var userProfile = _userProfileRepository.GetProfile();
             var daysInMonth = DateTime.DaysInMonth(month.Year, month.Month);
+            var firstDayOfMonth = new DateTime(month.Year, month.Month, 1);
 
-            for (int day = 1; day <= daysInMonth; day++)
-            {
-                var date = new DateTime(month.Year, month.Month, day);
-                var entries = _foodEntryRepository.GetByDate(date).ToList();
-                var totalCalories = entries.Sum(e => e.TotalCalories);
-
-                stats.Add(new DailyStats
-                {
-                    Date = date,
-                    TotalCalories = totalCalories,
-                    Goal = userProfile.DailyCalorieGoal,
-                    Entries = entries
-                });
-            }
-
-            return stats;
+            return GetStatsForDateRange(firstDayOfMonth, daysInMonth);
         }
 
         public double CalculateAverageCalories(DateTime startDate, DateTime endDate)
@@ -100,7 +69,47 @@ namespace CalorieTracker.Services
         {
             var totalCalories = CalculateDailyCalories(date);
             var userProfile = _userProfileRepository.GetProfile();
-            var goal = userProfile.DailyCalorieGoal;
+
+            return _goalStatusCalculator.CalculateGoalStatus(date, totalCalories, userProfile.DailyCalorieGoal);
+        }
+
+        // Extracted method to eliminate code duplication
+        private List<DailyStats> GetStatsForDateRange(DateTime startDate, int numberOfDays)
+        {
+            var stats = new List<DailyStats>();
+            var userProfile = _userProfileRepository.GetProfile();
+
+            // Optimize by getting all entries at once instead of multiple repository calls
+            var endDate = startDate.AddDays(numberOfDays - 1);
+            var allEntries = _foodEntryRepository.GetByDateRange(startDate, endDate)
+                .GroupBy(e => e.DateTime.Date)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            for (int i = 0; i < numberOfDays; i++)
+            {
+                var date = startDate.AddDays(i);
+                var entries = allEntries.ContainsKey(date.Date) ? allEntries[date.Date] : new List<FoodEntry>();
+
+                stats.Add(_dailyStatsFactory.CreateDailyStats(date, entries, userProfile.DailyCalorieGoal));
+            }
+
+            return stats;
+        }
+    }
+
+    // Extracted interface and class for goal status calculation
+    public interface IGoalStatusCalculator
+    {
+        CalorieGoalStatus CalculateGoalStatus(DateTime date, double totalCalories, double goal);
+    }
+
+    public class GoalStatusCalculator : IGoalStatusCalculator
+    {
+        private const double UNDER_GOAL_THRESHOLD = 80.0;
+        private const double OVER_GOAL_THRESHOLD = 120.0;
+
+        public CalorieGoalStatus CalculateGoalStatus(DateTime date, double totalCalories, double goal)
+        {
             var difference = totalCalories - goal;
             var percentage = goal > 0 ? (totalCalories / goal) * 100 : 0;
 
@@ -117,22 +126,35 @@ namespace CalorieTracker.Services
 
         private GoalStatusType GetGoalStatusType(double percentage)
         {
-            if (percentage < 80)
-            {
+            if (percentage < UNDER_GOAL_THRESHOLD)
                 return GoalStatusType.UnderGoal;
-            }
-            else if (percentage >= 80 && percentage <= 120)
-            {
-                return GoalStatusType.OnTrack;
-            }
-            else if (percentage > 120)
-            {
+
+            if (percentage > OVER_GOAL_THRESHOLD)
                 return GoalStatusType.OverGoal;
-            }
-            else
+
+            return GoalStatusType.OnTrack;
+        }
+    }
+
+    // Extracted interface and class for DailyStats creation
+    public interface IDailyStatsFactory
+    {
+        DailyStats CreateDailyStats(DateTime date, List<FoodEntry> entries, double dailyCalorieGoal);
+    }
+
+    public class DailyStatsFactory : IDailyStatsFactory
+    {
+        public DailyStats CreateDailyStats(DateTime date, List<FoodEntry> entries, double dailyCalorieGoal)
+        {
+            var totalCalories = entries.Sum(e => e.TotalCalories);
+
+            return new DailyStats
             {
-                return GoalStatusType.OnTrack;
-            }
+                Date = date,
+                TotalCalories = totalCalories,
+                Goal = dailyCalorieGoal,
+                Entries = entries
+            };
         }
     }
 }
