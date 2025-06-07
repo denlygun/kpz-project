@@ -1,40 +1,25 @@
 ﻿using CalorieTracker.Models;
 using CalorieTracker.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CalorieTracker.Services
 {
-    public class AddFoodEntryCommand : ICommand
+    public class AddFoodEntryCommand : FoodEntryCommandBase
     {
-        private readonly FoodEntryRepository _repository;
-        private readonly FoodEntry _foodEntry;
-        private readonly ICalorieGoalSubject _notificationService;
-
         public AddFoodEntryCommand(FoodEntryRepository repository, FoodEntry foodEntry, ICalorieGoalSubject notificationService)
+            : base(repository, notificationService)
         {
-            _repository = repository;
-            _foodEntry = foodEntry;
-            _notificationService = notificationService;
+            Entry = foodEntry;
         }
 
-        public void Execute()
+        protected override void ExecuteInternal()
         {
-            _repository.Add(_foodEntry);
-            _repository.SaveChanges();
-            var totalCalories = _repository.GetTotalCaloriesForDate(_foodEntry.DateTime);
-            _notificationService.NotifyDailyCaloriesChanged(_foodEntry.DateTime, totalCalories);
+            Repository.Add(Entry);
         }
 
-        public void Undo()
+        protected override void UndoInternal()
         {
-            _repository.Delete(_foodEntry.Id);
-            _repository.SaveChanges();
-            var totalCalories = _repository.GetTotalCaloriesForDate(_foodEntry.DateTime);
-            _notificationService.NotifyDailyCaloriesChanged(_foodEntry.DateTime, totalCalories);
+            Repository.Delete(Entry.Id);
         }
     }
+
 }
